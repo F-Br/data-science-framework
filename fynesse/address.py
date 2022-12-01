@@ -1,4 +1,3 @@
-from .config import *
 
 # This file contains code for suporting addressing questions in the data
 from . import access
