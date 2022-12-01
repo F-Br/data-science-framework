@@ -11,6 +11,13 @@ import sqlite"""
 
 """Place commands in this file to access the data electronically. Don't remove any missing values, or deal with outliers. Make sure you have legalities correct, both intellectual property and personal data privacy rights. Beyond the legal side also think about the ethical issues around this data. """
 
+
+
+def testing_func():
+    print("works!")
+
+
+
 def data():
     """Read the data from the web or local file, returning structured format such as a data frame"""
     raise NotImplementedError
