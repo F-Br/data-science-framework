@@ -14,6 +14,12 @@ import sklearn.feature_extraction"""
 
 
 import datetime
+import numpy as np
+from scipy.spatial import distance
+import osmnx as ox
+import matplotlib.pyplot as plt
+import geopandas
+import pandas as pd
 
 # db 
 
@@ -23,7 +29,7 @@ def fetch_table_head(table, limit):
     :param limit: int number of rows
     :return rows: tuple of tuple of row values
     """
-    conn = create_connection()
+    conn = access.create_connection()
 
     cur = conn.cursor()
 
@@ -39,7 +45,7 @@ def table_row_count(table):
     :param table: string table name
     :return rows: tuple of tuple of row values
     """
-    conn = create_connection()
+    conn = access.create_connection()
 
     cur = conn.cursor()
 
@@ -57,7 +63,7 @@ def check_column_for_null(table, column_name):
     :param column_name: string column name
     :return rows: tuple of tuple of row values
     """
-    conn = create_connection()
+    conn = access.create_connection()
 
     cur = conn.cursor()
 
@@ -77,7 +83,7 @@ def check_column_for_value(table, column_name, check_value):
     :param check_value: string or int value
     :return rows: tuple of tuple of row values
     """
-    conn = create_connection()
+    conn = access.create_connection()
 
     cur = conn.cursor()
 
@@ -94,7 +100,7 @@ def check_for_no_longitude_and_lattitude():
     """ Gives how many rows don't have a value for both lattitude and longitude.
     :return rows: tuple of tuple of row values
     """
-    conn = create_connection()
+    conn = access.create_connection()
 
     cur = conn.cursor()
 
@@ -153,7 +159,7 @@ def plot_category_maps(category_list, name_location, lattitude, longitude, box_w
     :param box_height: float degree height of map
     """
 
-    north, south, west, east = calculate_bounding_box_dimensions(lattitude, longitude, box_width, box_height)
+    north, south, west, east = access.calculate_bounding_box_dimensions(lattitude, longitude, box_width, box_height)
 
     graph = ox.graph_from_bbox(north, south, east, west)
 
@@ -175,7 +181,7 @@ def plot_category_maps(category_list, name_location, lattitude, longitude, box_w
 
     # Plot all POIs 
     for category in category_list:
-        category_pois = fetch_pois_from_bounding_box(lattitude, longitude, box_width, box_height, fetch_tags(category))
+        category_pois = access.fetch_pois_from_bounding_box(lattitude, longitude, box_width, box_height, access.fetch_tags(category))
         category_pois.plot(ax=ax, alpha=0.3, label=category)
     plt.tight_layout()
     plt.legend()
@@ -198,10 +204,10 @@ def plot_local_price_map(name_location, lattitude, longitude, box_width, box_hei
     if date is None:
         date = datetime.date(2019, 1, 1)
     if price_df is None:
-        pp_data, col_names = fetch_pp_and_pc_joined_area(lattitude, longitude, date, box_height, box_width, days_since)
+        pp_data, col_names = access.fetch_pp_and_pc_joined_area(lattitude, longitude, date, box_height, box_width, days_since)
         price_df = pd.DataFrame(pp_data, columns=col_names)
     
-    north, south, west, east = calculate_bounding_box_dimensions(lattitude, longitude, box_width, box_height)
+    north, south, west, east = access.calculate_bounding_box_dimensions(lattitude, longitude, box_width, box_height)
 
     graph = ox.graph_from_bbox(north, south, east, west)
 
@@ -246,13 +252,13 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
     if date == None:
         date = datetime.date(2019, 1, 1)
     if price_df == None:
-        pp_data, col_names = fetch_pp_and_pc_joined_area(UK_lattitude_mean, UK_longitude_mean, date, lat_height=UK_lattitude_range, long_width=UK_longitude_range, days_since=days_since)
+        pp_data, col_names = access.fetch_pp_and_pc_joined_area(UK_lattitude_mean, UK_longitude_mean, date, lat_height=UK_lattitude_range, long_width=UK_longitude_range, days_since=days_since)
         price_df = pd.DataFrame(pp_data, columns=col_names)
     
     price_df = price_df[price_df["price"] < 700000] # TODO: THIS IS IMPORTANT BECAUSE IT REMOVES OUTLIERS, MAKE A COMMENT THAT YOU SHOULD DO THIS FOR THE DATAFRAME/TABLE
     #price_df = price_df.sample(n=250)
 
-    north, south, west, east = calculate_bounding_box_dimensions(UK_lattitude_mean, UK_longitude_mean, UK_longitude_range, UK_lattitude_range)
+    north, south, west, east = access.calculate_bounding_box_dimensions(UK_lattitude_mean, UK_longitude_mean, UK_longitude_range, UK_lattitude_range)
 
     #graph = ox.graph_from_place("UK")
 
