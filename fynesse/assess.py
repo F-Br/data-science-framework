@@ -107,6 +107,11 @@ def check_for_no_longitude_and_lattitude():
 # osm data operations
 
 def remove_price_tails(price_df, tail_amount_cut):
+    """ Removes from the price outliers from a dataframe.
+    :param price_df: pandas dataframe with price column
+    :param tail_amount_cut: float between 0 and 0.5 for proportion cut on each tail
+    :return price_df: pandas dataframe with price column
+    """
     if tail_amount_cut >= 0.5:
         raise ValueError(f"tail_amount_cut must be less than 0.5, argument value given was {tail_amount_cut}")
     if tail_amount_cut < 0:
@@ -119,6 +124,13 @@ def remove_price_tails(price_df, tail_amount_cut):
 
 
 def calculate_closest_feature(lat, long, feature_df, max_distance):
+    """ Calculates the euclidean distance to the closest feature.
+    :param lat: float lattitude
+    :param long: float longitude
+    :param feature_df: pandas dataframe of features and coordinates
+    :param max_distance: float maximum distance value
+    :return: float shortest distance from location to nearest feature
+    """
     if len(feature_df) == 0:
         return max_distance * 2
     property_location = np.array([(lat, long)])
@@ -129,6 +141,15 @@ def calculate_closest_feature(lat, long, feature_df, max_distance):
 # osm plotting
 
 def plot_category_maps(category_list, name_location, lattitude, longitude, box_width, box_height):
+    """ Plots local street map around location and overlays it
+        with the category features from osm present nearby.
+    :param category_list: list of strings of categories
+    :param name_location: string name of location
+    :param lattitude: float lattitude
+    :param longitude: float longitude
+    :param box_width: float degree width of map
+    :param box_height: float degree height of map
+    """
 
     north, south, west, east = calculate_bounding_box_dimensions(lattitude, longitude, box_width, box_height)
 
@@ -160,6 +181,18 @@ def plot_category_maps(category_list, name_location, lattitude, longitude, box_w
 
 
 def plot_local_price_map(name_location, lattitude, longitude, box_width, box_height, price_df=None, date=None, days_since=365):
+    """ Plots local street map around location and overlays it
+        with the properties sold nearby with a colour proportional
+        to their price.
+    :param name_location: string name of location
+    :param lattitude: float lattitude
+    :param longitude: float longitude
+    :param box_width: float degree width of map
+    :param box_height: float degree height of map
+    :param price_df: pandas dataframe pricing data
+    :param date: datetime object date
+    :param days_since: int days since the date to include properties from
+    """
     if date is None:
         date = datetime.date(2019, 1, 1)
     if price_df is None:
@@ -193,7 +226,12 @@ def plot_local_price_map(name_location, lattitude, longitude, box_width, box_hei
 
 
 def plot_UK_price_map(price_df=None, date=None, days_since=100):
-
+    """ Plots map of UK and overlays it with the properties sold 
+        with a colour proportional to their price.
+    :param price_df: pandas dataframe pricing data
+    :param date: datetime object date
+    :param days_since: int days since the date to include properties from
+    """
     UK_max_lattitude = 58.696977
     UK_min_lattitude = 49.921544
     UK_max_longitude = 1.830806
@@ -254,6 +292,10 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
 
 
 def plot_type_distribution(price_df):
+    """ Plots the price distribution for different property types in
+        a dataframe.
+    :param price_df: pandas dataframe pricing data
+    """
     detached = price_df[price_df["type"] == "D"]["price"]
     semi_detached = price_df[price_df["type"] == "S"]["price"]
     terraced = price_df[price_df["type"] == "T"]["price"]
