@@ -205,8 +205,7 @@ def plot_local_price_map(name_location, lattitude, longitude, box_width, box_hei
     if date is None:
         date = datetime.date(2019, 1, 1)
     if price_df is None:
-        pp_data, col_names = access.fetch_pp_and_pc_joined_area(lattitude, longitude, date, box_height, box_width, days_since)
-        price_df = pd.DataFrame(pp_data, columns=col_names)
+        price_df = access.fetch_pp_and_pc_joined_area(lattitude, longitude, date, box_height, box_width, days_since)
     
     north, south, west, east = access.calculate_bounding_box_dimensions(lattitude, longitude, box_width, box_height)
 
@@ -253,8 +252,7 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
     if date == None:
         date = datetime.date(2019, 1, 1)
     if price_df == None:
-        pp_data, col_names = access.fetch_pp_and_pc_joined_area(UK_lattitude_mean, UK_longitude_mean, date, lat_height=UK_lattitude_range, long_width=UK_longitude_range, days_since=days_since)
-        price_df = pd.DataFrame(pp_data, columns=col_names)
+        price_df = access.fetch_pp_and_pc_joined_area(UK_lattitude_mean, UK_longitude_mean, date, lat_height=UK_lattitude_range, long_width=UK_longitude_range, days_since=days_since)
     
     price_df = price_df[price_df["price"] < 700000] # TODO: THIS IS IMPORTANT BECAUSE IT REMOVES OUTLIERS, MAKE A COMMENT THAT YOU SHOULD DO THIS FOR THE DATAFRAME/TABLE
     #price_df = price_df.sample(n=250)
