@@ -74,19 +74,19 @@ def fetch_all_training_data(target_lat, target_long, feature_range_width, featur
 
     for category in category_list:
         for i in range(len(training_df)):
-        #print(type(training_df.at[i, "lattitude"]))
-        #print(training_df.at[i, "lattitude"])
-        #asdasd
-        #features = fetch_geo_features_nearby_from_df(training_df["lattitude"], training_df["longitude"], feature_range_width, feature_range_height, category_pois_dict[category])
-        #feature_df = fetch_geo_features_nearby_from_df(float(training_df.at[i, "lattitude"]), float(training_df.at[i, "longitude"]), feature_range_width, feature_range_height, category_pois_dict[category])
-        feature_df = access.fetch_geo_features_nearby_from_df(float(training_df["lattitude"].iloc[i]), float(training_df["longitude"].iloc[i]), feature_range_width, feature_range_height, category_pois_dict[category])
-        training_df[f"n_{category}"].iloc[i] = len(feature_df)
-        training_df[f"shortest_distance_{category}"].iloc[i] = float(assess.calculate_closest_feature(float(training_df["lattitude"].iloc[i]), float(training_df["longitude"].iloc[i]), feature_df, feature_range_width*(2**(1/2))))
-        #training_df.at[i, f"n_{category}"] = len(feature_df)
-        #training_df.at[i, f"shortest_distance_{category}"] = float(calculate_closest_feature(float(training_df.at[i, "lattitude"]), float(training_df.at[i, "longitude"]), feature_df, feature_range_width*(2**(1/2))))
-        #print(f"added features for category: {category}")
-        #print(len(training_df))
-        #print(training_df.shape[0])
+            #print(type(training_df.at[i, "lattitude"]))
+            #print(training_df.at[i, "lattitude"])
+            #asdasd
+            #features = fetch_geo_features_nearby_from_df(training_df["lattitude"], training_df["longitude"], feature_range_width, feature_range_height, category_pois_dict[category])
+            #feature_df = fetch_geo_features_nearby_from_df(float(training_df.at[i, "lattitude"]), float(training_df.at[i, "longitude"]), feature_range_width, feature_range_height, category_pois_dict[category])
+            feature_df = access.fetch_geo_features_nearby_from_df(float(training_df["lattitude"].iloc[i]), float(training_df["longitude"].iloc[i]), feature_range_width, feature_range_height, category_pois_dict[category])
+            training_df[f"n_{category}"].iloc[i] = len(feature_df)
+            training_df[f"shortest_distance_{category}"].iloc[i] = float(assess.calculate_closest_feature(float(training_df["lattitude"].iloc[i]), float(training_df["longitude"].iloc[i]), feature_df, feature_range_width*(2**(1/2))))
+            #training_df.at[i, f"n_{category}"] = len(feature_df)
+            #training_df.at[i, f"shortest_distance_{category}"] = float(calculate_closest_feature(float(training_df.at[i, "lattitude"]), float(training_df.at[i, "longitude"]), feature_df, feature_range_width*(2**(1/2))))
+            #print(f"added features for category: {category}")
+            #print(len(training_df))
+            #print(training_df.shape[0])
 
     return training_df, category_pois_dict
 
