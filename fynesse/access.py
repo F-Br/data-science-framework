@@ -88,78 +88,6 @@ def upload_csv_to_db(file, table):
     conn.close()
 
 
-def fetch_table_head(table, limit):
-    """ Fetches the head of a table up to a given number of rows.
-    :param table: string table name
-    :param limit: int number of rows
-    :return rows: tuple of tuple of row values
-    """
-    conn = create_connection()
-
-    cur = conn.cursor()
-
-    cur.execute(f"""
-                SELECT * FROM {table} LIMIT {limit};
-                """)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
-
-def table_row_count(table):
-    """ Fetches the row count in a table.
-    :param table: string table name
-    :return rows: tuple of tuple of row values
-    """
-    conn = create_connection()
-
-    cur = conn.cursor()
-
-    cur.execute(f"""
-                SELECT count(*) FROM {table};
-                """)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
-
-
-def check_column_for_null(table, column_name):
-    """ Checks for a column, how many rows contain a null value. 
-    :param table: string table name
-    :param column_name: string column name
-    :return rows: tuple of tuple of row values
-    """
-    conn = create_connection()
-
-    cur = conn.cursor()
-
-    cur.execute(f"""
-                SELECT count(*) FROM {table}
-                WHERE {column_name} IS NULL;
-                """)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
-
-
-def check_column_for_value(table, column_name, check_value):
-    """ Checks for a column, how many rows contain a specific value. 
-    :param table: string table name
-    :param column_name: string column name
-    :param check_value: string or int value
-    :return rows: tuple of tuple of row values
-    """
-    conn = create_connection()
-
-    cur = conn.cursor()
-
-    cur.execute(f"""
-                SELECT count(*) FROM {table}
-                WHERE {column_name} = "{check_value}";
-                """)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
-
 
 def fetch_pp_and_pc_joined_area(lat, long, date, lat_height=0.05, long_width=0.05, days_since=365):
     """ Joins the property price and postcode data along the postcode column.
@@ -213,22 +141,6 @@ def fetch_pp_and_pc_joined_area(lat, long, date, lat_height=0.05, long_width=0.0
         conn.close()
 
 
-
-def check_for_no_longitude_and_lattitude():
-    """ Gives how many rows don't have a value for both lattitude and longitude.
-    :return rows: tuple of tuple of row values
-    """
-    conn = create_connection()
-
-    cur = conn.cursor()
-
-    cur.execute(f"""
-                SELECT count(*) FROM postcode_data
-                WHERE longitude = "" and lattitude = "";
-                """)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
 
 def setup_pp_table():
     """ Creates the property price data table and adds indexes.
