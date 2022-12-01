@@ -249,12 +249,12 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
     UK_longitude_mean = (UK_max_longitude + UK_min_longitude)/2
     UK_longitude_range = abs(UK_max_longitude - UK_min_longitude)
 
-    if date == None:
+    if date is None:
         date = datetime.date(2019, 1, 1)
-    if price_df == None:
+    if price_df is None:
         price_df = access.fetch_pp_and_pc_joined_area(UK_lattitude_mean, UK_longitude_mean, date, lat_height=UK_lattitude_range, long_width=UK_longitude_range, days_since=days_since)
     
-    price_df = price_df[price_df["price"] < 700000] # TODO: THIS IS IMPORTANT BECAUSE IT REMOVES OUTLIERS, MAKE A COMMENT THAT YOU SHOULD DO THIS FOR THE DATAFRAME/TABLE
+    #price_df = price_df[price_df["price"] < 700000] # TODO: THIS IS IMPORTANT BECAUSE IT REMOVES OUTLIERS, MAKE A COMMENT THAT YOU SHOULD DO THIS FOR THE DATAFRAME/TABLE
     #price_df = price_df.sample(n=250)
 
     north, south, west, east = access.calculate_bounding_box_dimensions(UK_lattitude_mean, UK_longitude_mean, UK_longitude_range, UK_lattitude_range)
