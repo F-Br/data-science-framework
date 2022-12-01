@@ -11,6 +11,16 @@ import sqlite"""
 
 """Place commands in this file to access the data electronically. Don't remove any missing values, or deal with outliers. Make sure you have legalities correct, both intellectual property and personal data privacy rights. Beyond the legal side also think about the ethical issues around this data. """
 
+
+import datetime
+import numpy as np
+from scipy.spatial import distance
+import osmnx as ox
+import matplotlib.pyplot as plt
+import geopandas
+import pandas as pd
+import pymysql
+
 import yaml
 from ipywidgets import interact_manual, Text, Password
 

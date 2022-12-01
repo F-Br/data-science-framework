@@ -20,6 +20,7 @@ import osmnx as ox
 import matplotlib.pyplot as plt
 import geopandas
 import pandas as pd
+import pymysql
 
 # db 
 
