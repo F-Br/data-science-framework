@@ -298,7 +298,7 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
     #mlai.write_figure
 
 
-def plot_type_distribution(price_df):
+def plot_type_distribution(price_df, bins=15):
     """ Plots the price distribution for different property types in
         a dataframe.
     :param price_df: pandas dataframe pricing data
@@ -309,7 +309,6 @@ def plot_type_distribution(price_df):
     flat = price_df[price_df["type"] == "F"]["price"]
     other = price_df[price_df["type"] == "O"]["price"]
 
-    bins = 15
     plt.hist(detached, bins, alpha=0.5, label='detached')
     plt.hist(semi_detached, bins, alpha=0.5, label='semi_detached')
     plt.hist(terraced, bins, alpha=0.5, label='terraced')
@@ -318,6 +317,11 @@ def plot_type_distribution(price_df):
     
     plt.legend(loc='upper right')
     plt.show()
+
+#need to update this
+def plot_rolling_average(df, x_col, y_col, window_size):
+    rolling_price_array = df.sort_values(by=[x_col])[y_col].rolling(window=window_size).mean()
+    plt.plot(df.sort_values(by=[x_col])[x_col], rolling_price_array)
 
 
 
