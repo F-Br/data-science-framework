@@ -1,5 +1,7 @@
 from .config import *
 
+from . import address
+
 """These are the types of import we might expect in this file
 import httplib2
 import oauth2
@@ -488,6 +490,15 @@ def fetch_pois_coordinates(pois):
     pois["longitude"] = pois["geometry"].centroid.x #pois.apply(lambda feature: fetch_central_longitude(feature["geometry"]), axis=1)
     return pois
 
+
+
+def prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=365, property_box_length=0.08, feature_box_length=0.02, training_df=None, category_pois_dict=None):
+    if ((training_df is None) or (category_pois_dict is None)):  
+        training_df, category_pois_dict = address.fetch_all_training_data(pred_lattitude, pred_longitude, feature_box_length, feature_box_length, property_box_length, property_box_length, category_list, property_type, date, days_since=days_since)
+        training_df = training_df[address.feature_column_list_from_category_list(category_list)]
+    ys = np.array(training_df["price"], dtype=float)
+    xs = np.array(training_df.drop("price", axis=1), dtype=float)
+    return ys, xs, training_df, category_pois_dict
 
 # ----------------------
 
