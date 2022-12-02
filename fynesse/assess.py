@@ -135,8 +135,8 @@ def plot_local_price_map(name_location, lattitude, longitude, box_width, box_hei
 
     ax.set_xlim([west, east])
     ax.set_ylim([south, north])
-    ax.set_xlabel("longitude")
-    ax.set_ylabel("latitude")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
 
     # Plot all POIs 
     price_df.plot.scatter(ax=ax, x='longitude', y='lattitude', alpha=0.3, zorder=2, c='price', colormap='viridis')
@@ -191,8 +191,9 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
 
     ax.set_xlim([west, east])
     ax.set_ylim([south, north])
-    ax.set_xlabel("longitude")
-    ax.set_ylabel("latitude")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    plt.title("Property Prices Across The UK")
 
 
     # Plot all POIs 
@@ -226,6 +227,10 @@ def plot_type_distribution(price_df, bins=15):
     plt.hist(flat, bins, alpha=0.5, label='flat')
     plt.hist(other, bins, alpha=0.5, label='other')
     
+    plt.xlabel("Price")
+    plt.ylabel("No. Properties")
+    plt.title("Property Type and Price Distribution")
+
     plt.legend(loc='upper right')
     plt.show()
 
@@ -244,6 +249,9 @@ def plot_rolling_average(df, x_col, y_col, window_size, alpha=0.1, label="", col
     :param ax: matplotlib ax object axes
     """
     rolling_price_array = df.sort_values(by=[x_col])[y_col].rolling(window=window_size).mean()
+    plt.xlabel(x_col)
+    plt.ylabel("rolling average price")
+    plt.title(f"Rolling average price along {x_col} over The UK")
     plt.plot(df.sort_values(by=[x_col])[x_col], rolling_price_array, alpha=alpha, label=label, color=color)
 
 
