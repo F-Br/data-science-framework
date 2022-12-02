@@ -29,6 +29,10 @@ from zipfile import ZipFile
 from urllib.request import urlopen, Request
 from io import BytesIO
 
+# ---------------------------------------------------------------------
+# Database essentials
+# ---------------------------------------------------------------------
+
 import yaml
 from ipywidgets import interact_manual, Text, Password
 
@@ -88,6 +92,11 @@ def create_connection(database=db_name, user=usn, password=pwd, host=url, port=3
     except Exception as e:
         print(f"Error connecting to the MariaDB Server: {e}")
     return conn
+
+
+# ---------------------------------------------------------------------
+# Database setup, uploading, and joins
+# ---------------------------------------------------------------------
 
 
 def upload_csv_to_db(file, table):
@@ -340,7 +349,7 @@ def upload_pc_data():
     """ Download and upload postcode data from the getthedata website 
         to the database instance.
     """
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3"} # copied from https://medium.com/@speedforcerun/python-crawler-http-error-403-forbidden-1623ae9ba0f
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3"} # credited to https://medium.com/@speedforcerun/python-crawler-http-error-403-forbidden-1623ae9ba0f
 
     # download data
     unzip_location = "."
@@ -355,7 +364,11 @@ def upload_pc_data():
     print("ONS data uploaded")
 
 
-# db data cleaning/sanity checks
+
+# ---------------------------------------------------------------------
+# Database data cleaning/sanity checks/utilities
+# ---------------------------------------------------------------------
+
 
 def fetch_table_head(table, limit):
     """ Fetches the head of a table up to a given number of rows.
@@ -448,7 +461,9 @@ def check_for_no_longitude_and_lattitude():
 
 
 
-# osm functions
+# ---------------------------------------------------------------------
+# OSM fetching
+# ---------------------------------------------------------------------
 
 
 def fetch_pois_from_bounding_box(lattitude, longitude, box_width, box_height, tags):
@@ -517,7 +532,6 @@ def fetch_tags(category):
                      "building": ["grandstand", "sports_hall", "stadium"],
                      "leisure": ["dance", "fishing", "fitness_centre", "fitness_station", "horse_riding", "pitch", "sports_centre", "swimming_area", "swimming_pool", "track"],
                      "sport": True},
-#       "public_services": {"amenity": ["fire_station", "police", "post_box", "post_depot", "post_office", "ranger_station", "townhall", "prison", "courthouse"]}, TODO: Removed because feature seem to be more misleading than anything (prison vs postoffice, close to police being annoying) - can test this theory using data analysis which should suggest no correlation
         "public_transport": {"amenity": ["bus_station", "ferry_terminal"],
                              "public_transport": ["stop_position", "station"],
                              "highway": ["bus_stop"]},
@@ -582,9 +596,14 @@ def fetch_pois_coordinates(pois):
     :return pois: geo dataframe pois
     """
     
-    pois["lattitude"] = pois["geometry"].centroid.y #pois.apply(lambda feature: fetch_central_lattitude(feature["geometry"]), axis=1)
-    pois["longitude"] = pois["geometry"].centroid.x #pois.apply(lambda feature: fetch_central_longitude(feature["geometry"]), axis=1)
+    pois["lattitude"] = pois["geometry"].centroid.y
+    pois["longitude"] = pois["geometry"].centroid.x
     return pois
+
+
+# ---------------------------------------------------------------------
+# Validation dataset fetching
+# ---------------------------------------------------------------------
 
 
 def fetch_test_town_pp_data(town_tests_dict, width=0.08, height=0.08, date=datetime.date(2019, 1, 1)):

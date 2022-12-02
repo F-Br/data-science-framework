@@ -25,3 +25,23 @@ Data that is accessible can be imported (via APIs or database calls or reading a
 ## Address
 
 The final aspect of the process is to *address* the question. We'll spend the least time on this aspect here, because it's the one that is most widely formally taught and the one that most researchers are familiar with. In statistics, this might involve some confirmatory data analysis. In machine learning it may involve designing a predictive model. In many domains it will involve figuring out how best to visualise the data to present it to those who need to make the decisions. That could involve a dashboard, a plot or even summarisation in an Excel spreadsheet.
+
+
+
+# Library Structure
+
+This library is structured into the 3 components of the fynesse framework (template from: https://github.com/lawrennd/fynesse_template) which are used in the assessment notebook to iteratively go through the fynesse framework cycle to answer questions about data and setup more questions.
+
+All functions have docstrings and my code has been commented where appropriate to improve clarity. 
+
+## Access
+*   Database essentials
+*   Database setup, uploading, and joins
+*   Database data cleaning/sanity checks/utilities
+*   OSM fetching
+*   Validation dataset fetching
+
+## Assess
+
+
+## Address
