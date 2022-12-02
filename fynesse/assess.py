@@ -318,10 +318,11 @@ def plot_type_distribution(price_df, bins=15):
     plt.legend(loc='upper right')
     plt.show()
 
-#need to update this
-def plot_rolling_average(df, x_col, y_col, window_size):
+
+
+def plot_rolling_average(df, x_col, y_col, window_size, alpha=0.1, label="", color="b", fig=None, ax=None):
     rolling_price_array = df.sort_values(by=[x_col])[y_col].rolling(window=window_size).mean()
-    plt.plot(df.sort_values(by=[x_col])[x_col], rolling_price_array)
+    plt.plot(df.sort_values(by=[x_col])[x_col], rolling_price_array, alpha=alpha, label=label, color=color)
 
 
 

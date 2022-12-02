@@ -490,7 +490,16 @@ def fetch_pois_coordinates(pois):
     return pois
 
 
-
+def fetch_test_town_pp_data(town_tests_dict, width=0.08, height=0.08, date=datetime.date(2019, 1, 1)):
+    town_dfs = []
+    for town in town_tests_dict.keys():
+        lat = town_tests_dict[town][0]
+        long = town_tests_dict[town][1]
+    
+        price_df = fetch_pp_and_pc_joined_area(lat, long, date, height, width, days_since=365)
+        town_dfs.append([price_df, town])
+        print(f"fetched {town} pricing data")
+    return town_dfs
 
 
 # ----------------------
