@@ -321,6 +321,17 @@ def plot_type_distribution(price_df, bins=15):
 
 
 def plot_rolling_average(df, x_col, y_col, window_size, alpha=0.1, label="", color="b", fig=None, ax=None):
+    """ Plots the rolling average of a dataframe with a column respect to another column.
+    :param df: pandas dataframe
+    :param x_col: string column on x axis
+    :param y_col: string column on y axis
+    :param window_size: int window size
+    :param alpha: float between 0 and 1 alpha of line plot
+    :param label: string line label
+    :param color: string line colour
+    :param fig: matplotlib fig object figure
+    :param ax: matplotlib ax object axes
+    """
     rolling_price_array = df.sort_values(by=[x_col])[y_col].rolling(window=window_size).mean()
     plt.plot(df.sort_values(by=[x_col])[x_col], rolling_price_array, alpha=alpha, label=label, color=color)
 

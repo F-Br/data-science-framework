@@ -129,6 +129,23 @@ def fetch_prediction_data(target_lat, target_long, feature_range_width, feature_
 
 
 def prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=365, property_box_length=0.08, feature_box_length=0.02, training_df=None, category_pois_dict=None):
+    """ Fetches all of the training data needed for model training and augments
+        it into the form which is required for training.
+    :param pred_lattitude: float lattitude
+    :param pred_longitude: float longitude
+    :param property_type: string property type
+    :param date: datetime object date
+    :param category_list: list of strings of categories
+    :param days_since: int days since both sides
+    :param property_box_length: float degree width to collect properties from
+    :param feature_box_length: float degree width to collect features from
+    :param training_df: pandas dataframe training set
+    :param category_pois_dict: dictionary of string->geo dataframe category->feature dataframe
+    :return ys: numpy float array of prices 
+    :return xs: numpy float array of features
+    :return training_df: pandas dataframe training set
+    :return category_pois_dict: dictionary of string->geo dataframe category->feature dataframe
+    """
     if ((training_df is None) or (category_pois_dict is None)):  
         training_df, category_pois_dict = fetch_all_training_data(pred_lattitude, pred_longitude, feature_box_length, feature_box_length, property_box_length, property_box_length, category_list, property_type, date, days_since=days_since)
         training_df = training_df[feature_column_list_from_category_list(category_list)]
@@ -138,6 +155,13 @@ def prepare_training_data(pred_lattitude, pred_longitude, property_type, date, c
 
 
 def fit_OLS_model(ys, xs, training_df):
+    """ Fits an Ordinary Least Squares model to training data and returns
+        the fitted model.
+    :param ys: numpy float array of prices 
+    :param xs: numpy float array of features
+    :param training_df: pandas dataframe training set
+    :return fit_model: statsmodels results fitted model
+    """
     xs = sm.add_constant(xs)
     linear_model = sm.OLS(ys, xs)
     fit_model = linear_model.fit()
@@ -145,6 +169,14 @@ def fit_OLS_model(ys, xs, training_df):
 
 
 def fit_regularised_OLS_model(ys, xs, training_df, alpha=1, L1_wt=1):
+    """ Fits an Ordinary Least Squares model to training data with an L1
+        regularisation (Lasso regression) constraint and returns the fitted model.
+    :param ys: numpy float array of prices 
+    :param xs: numpy float array of features
+    :param alpha: float positive for penalty from L1 regularisation
+    :param L1_wt: float between 0 and 1 weighting towards L1 regularisation vs L2
+    :return fit_model: statsmodels reguralised results fitted model
+    """
     xs = sm.add_constant(xs)
     linear_model = sm.OLS(ys, xs)
     fit_model = linear_model.fit_regularized(alpha=alpha, L1_wt=L1_wt)
@@ -152,6 +184,11 @@ def fit_regularised_OLS_model(ys, xs, training_df, alpha=1, L1_wt=1):
 
 
 def validate_OLS_model(validation_df, fit_model):
+    """ Validates the performance of a fitted model. Provides graph plots and 
+        summary statistics on its performance.
+    :param validation_df: pandas dataframe validation data
+    :param fit_model: statsmodels results fitted model
+    """
     validation_df = validation_df.sort_values(by=['price'])
     print(f"fetched {len(validation_df)} properties for this location, check this isnt too low, if it is: prediction = N.A.")
     t_ys = np.array(validation_df["price"], dtype=float)
@@ -175,6 +212,12 @@ def validate_OLS_model(validation_df, fit_model):
 
 
 def predict_with_OLS_model(fit_model, prediction_df):
+    """ Validates the performance of a fitted model. Provides graph plots and 
+        summary statistics on its performance.
+    :param fit_model: statsmodels results fitted model
+    :param prediction_df: pandas dataframe of features to predict from
+    :return price_prediction: numpy array of predictions
+    """
     pred_xs = np.array(prediction_df)
     pred_xs = np.insert(pred_xs, 0, 1)
     print(pred_xs)
@@ -184,6 +227,22 @@ def predict_with_OLS_model(fit_model, prediction_df):
 
 
 def prediction_ols(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=365, property_box_length=0.08, feature_box_length=0.02, training_df=None, category_pois_dict=None, perform_prediction=True):
+    """ Shows training performance and also has capacity to perform predictions on other data points
+        if provided.
+    :param pred_lattitude: float lattitude
+    :param pred_longitude: float longitude
+    :param property_type: string property type
+    :param date: datetime object date
+    :param category_list: list of strings of categories
+    :param days_since: int days since both sides
+    :param property_box_length: float degree width to collect properties from
+    :param feature_box_length: float degree width to collect features from
+    :param training_df: pandas dataframe training set
+    :param category_pois_dict: dictionary of string->geo dataframe category->feature dataframe
+    :param perform_prediction: boolean perform prediction
+    :return fit_model: statsmodels results fitted model
+    :return price_prediction: (optional) numpy float array of features
+    """
     ys, xs, training_df, category_pois_dict = prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=days_since, property_box_length=property_box_length, feature_box_length=feature_box_length, training_df=training_df, category_pois_dict=category_pois_dict)
     fit_model = fit_OLS_model(ys, xs, training_df)
     validation_df = training_df
@@ -196,6 +255,22 @@ def prediction_ols(pred_lattitude, pred_longitude, property_type, date, category
 
 
 def prediction_ols_L1_regularised(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=365, property_box_length=0.08, feature_box_length=0.02, training_df=None, category_pois_dict=None, perform_prediction=True, alpha=1, L1_wt=1):
+    """ Shows training performance and reveals the params L1 regularisation has prioritised.
+    :param pred_lattitude: float lattitude
+    :param pred_longitude: float longitude
+    :param property_type: string property type
+    :param date: datetime object date
+    :param category_list: list of strings of categories
+    :param days_since: int days since both sides
+    :param property_box_length: float degree width to collect properties from
+    :param feature_box_length: float degree width to collect features from
+    :param training_df: pandas dataframe training set
+    :param category_pois_dict: dictionary of string->geo dataframe category->feature dataframe
+    :param perform_prediction: boolean perform prediction
+    :param alpha: float positive for penalty from L1 regularisation
+    :param L1_wt: float between 0 and 1 weighting towards L1 regularisation vs L2
+    :return fit_model: statsmodels reguralised results fitted model
+    """
     ys, xs, training_df, category_pois_dict = prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=days_since, property_box_length=property_box_length, feature_box_length=feature_box_length, training_df=training_df, category_pois_dict=category_pois_dict)
     fit_model = fit_regularised_OLS_model(ys, xs, training_df, alpha=alpha, L1_wt=L1_wt)
     print(f"Parameters for regularised model are: {fit_model.params}")

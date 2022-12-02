@@ -491,6 +491,14 @@ def fetch_pois_coordinates(pois):
 
 
 def fetch_test_town_pp_data(town_tests_dict, width=0.08, height=0.08, date=datetime.date(2019, 1, 1)):
+    """ Fetches the pricing data for the towns which have been selected 
+        as the validation/testing set.
+    :param town_tests_dict: list of list pandas dataframe, string pair. list of pairs of towns and their dataframes
+    :param width: float box width around town
+    :param height: float box height around town
+    :param date: datetime object date
+    :return north: float north
+    """
     town_dfs = []
     for town in town_tests_dict.keys():
         lat = town_tests_dict[town][0]
