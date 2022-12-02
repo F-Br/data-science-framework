@@ -25,6 +25,9 @@ import matplotlib.pyplot as plt
 import geopandas
 import pandas as pd
 import pymysql
+from zipfile import ZipFile
+from urllib.request import urlopen, Request
+from io import BytesIO
 
 import yaml
 from ipywidgets import interact_manual, Text, Password
