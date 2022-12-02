@@ -21,6 +21,9 @@ import scipy.stats"""
 
 
 import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
 
 # utility for prediction
 
@@ -123,3 +126,83 @@ def fetch_prediction_data(target_lat, target_long, feature_range_width, feature_
     prediction_df = pd.DataFrame(pred_row, index=[0])
 
     return prediction_df
+
+
+def prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=365, property_box_length=0.08, feature_box_length=0.02, training_df=None, category_pois_dict=None):
+    if ((training_df is None) or (category_pois_dict is None)):  
+        training_df, category_pois_dict = fetch_all_training_data(pred_lattitude, pred_longitude, feature_box_length, feature_box_length, property_box_length, property_box_length, category_list, property_type, date, days_since=days_since)
+        training_df = training_df[feature_column_list_from_category_list(category_list)]
+    ys = np.array(training_df["price"], dtype=float)
+    xs = np.array(training_df.drop("price", axis=1), dtype=float)
+    return ys, xs, training_df, category_pois_dict
+
+
+def fit_OLS_model(ys, xs, training_df):
+    xs = sm.add_constant(xs)
+    linear_model = sm.OLS(ys, xs)
+    fit_model = linear_model.fit()
+    return fit_model
+
+
+def fit_regularised_OLS_model(ys, xs, training_df, alpha=1, L1_wt=1):
+    xs = sm.add_constant(xs)
+    linear_model = sm.OLS(ys, xs)
+    fit_model = linear_model.fit_regularized(alpha=alpha, L1_wt=L1_wt)
+    return fit_model
+
+
+def validate_OLS_model(validation_df, fit_model):
+    validation_df = validation_df.sort_values(by=['price'])
+    print(f"fetched {len(validation_df)} properties for this location, check this isnt too low, if it is: prediction = N.A.")
+    t_ys = np.array(validation_df["price"], dtype=float)
+    t_xs = np.array(validation_df.drop("price", axis=1), dtype=float)
+    t_xs = sm.add_constant(t_xs)
+    t_pred_ys = fit_model.get_prediction(t_xs).summary_frame(alpha=0.05)
+    data_point_indexes = range(len(t_ys))
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    ax.scatter(data_point_indexes, t_ys, c='b', label='actual', alpha=1)
+    ax.scatter(data_point_indexes, t_pred_ys["mean"], c='r', label='prediction', alpha = 0.3)
+    ax.plot(data_point_indexes, t_pred_ys["obs_ci_lower"], linestyle="-", c='r', label='prediction lower confidence', alpha = 0.5)
+    ax.plot(data_point_indexes, t_pred_ys["obs_ci_upper"], linestyle="-", c='r', label='prediction upper confidence', alpha = 0.5)
+    ax.fill_between(data_point_indexes, t_pred_ys["obs_ci_lower"], t_pred_ys["obs_ci_upper"], color="red", alpha=0.1)
+    plt.legend()
+    plt.show()
+    print(fit_model.summary())
+
+
+
+def predict_with_OLS_model(fit_model, prediction_df):
+    pred_xs = np.array(prediction_df)
+    pred_xs = np.insert(pred_xs, 0, 1)
+    print(pred_xs)
+    price_prediction = fit_model.get_prediction(pred_xs).summary_frame(alpha=0.05)
+    print(price_prediction)
+    return price_prediction
+
+
+def prediction_ols(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=365, property_box_length=0.08, feature_box_length=0.02, training_df=None, category_pois_dict=None, perform_prediction=True):
+    ys, xs, training_df, category_pois_dict = prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=days_since, property_box_length=property_box_length, feature_box_length=feature_box_length, training_df=training_df, category_pois_dict=category_pois_dict)
+    fit_model = fit_OLS_model(ys, xs, training_df)
+    validation_df = training_df
+    validate_OLS_model(validation_df, fit_model)
+    if perform_prediction:
+        prediction_df = fetch_prediction_data(pred_lattitude, pred_longitude, feature_box_length, feature_box_length, category_pois_dict, date, days_since)
+        price_prediction = predict_with_OLS_model(fit_model, prediction_df)
+        return price_prediction, fit_model
+    return fit_model
+
+
+def prediction_ols_L1_regularised(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=365, property_box_length=0.08, feature_box_length=0.02, training_df=None, category_pois_dict=None, perform_prediction=True, alpha=1, L1_wt=1):
+    ys, xs, training_df, category_pois_dict = prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=days_since, property_box_length=property_box_length, feature_box_length=feature_box_length, training_df=training_df, category_pois_dict=category_pois_dict)
+    fit_model = fit_regularised_OLS_model(ys, xs, training_df, alpha=alpha, L1_wt=L1_wt)
+    print(f"Parameters for regularised model are: {fit_model.params}")
+    #validation_df = training_df
+    #validate_OLS_model_regularised(validation_df, fit_model)
+    #if perform_prediction:
+    #  prediction_df = fynesse.address.fetch_prediction_data(pred_lattitude, pred_longitude, feature_box_length, feature_box_length, category_pois_dict, date, days_since)
+    #  price_prediction = predict_with_OLS_model(fit_model, prediction_df)
+    #  return price_prediction, fit_model
+    return fit_model
