@@ -30,9 +30,10 @@ The final aspect of the process is to *address* the question. We'll spend the le
 
 # Library Structure
 
-This library is structured into the 3 components of the fynesse framework (template from: https://github.com/lawrennd/fynesse_template) which are used in the assessment notebook to iteratively go through the fynesse framework cycle to answer questions about data and setup more questions.
+This library is structured into the 3 components of the fynesse framework (template from: https://github.com/lawrennd/fynesse_template) which are used in the assessment notebook to iteratively go through the fynesse framework cycle to answer questions about data and setup more questions to answer.
 
 All functions have docstrings and my code has been commented where appropriate to improve clarity. 
+
 
 ## Access
 *   Database essentials
@@ -50,3 +51,17 @@ All functions have docstrings and my code has been commented where appropriate t
 *   Utility for prediction setup
 *   Model fitting and validation
 *   Model predictions
+
+
+# Data Rights, Legalities, and Further Information
+
+## Rights and legalities
+This project makes use of a number of datasets. They each have their own rights and legalities tied to them.
+
+*   Property price dataset: https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads#using-or-publishing-our-price-paid-data
+*   Postcode data license: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/  http://www.ordnancesurvey.co.uk/docs/licences/os-opendata-licence.pdf
+
+## Further information and documentation:
+Reading through the documentation for these databases helps to clarify what to expect from each column.
+*   For the Price Paid Datasets: https://www.gov.uk/guidance/about-the-price-paid-data#Explanations-of-column-headers-in-the-PPD
+*   For the postcode Dataset ("Fields" header): https://www.getthedata.com/open-postcode-geo
