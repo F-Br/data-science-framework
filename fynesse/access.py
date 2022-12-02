@@ -14,7 +14,6 @@ import sqlite"""
 
 # https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads#using-or-publishing-our-price-paid-data for information on data rights with property price data
 # https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/  http://www.ordnancesurvey.co.uk/docs/licences/os-opendata-licence.pdf   postcode data license
-# 
 
 
 import datetime
