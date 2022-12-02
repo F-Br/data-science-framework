@@ -47,8 +47,6 @@ All functions have docstrings and my code has been commented where appropriate t
 *   Misc plotting
 
 ## Address
-*   
-*   
-*   
-*   
-*   
+*   Utility for prediction setup
+*   Model fitting and validation
+*   Model predictions

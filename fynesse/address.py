@@ -27,6 +27,11 @@ import matplotlib.pyplot as plt
 
 # utility for prediction
 
+# ---------------------------------------------------------------------
+# Utility for prediction setup
+# ---------------------------------------------------------------------
+
+
 def feature_column_list_from_category_list(category_list):
     """ Returns the names of features from generated from a list
         of categories.
@@ -66,31 +71,16 @@ def fetch_all_training_data(target_lat, target_long, feature_range_width, featur
 
     # every row will consist of a lat, long, price, and features
     training_df = price_df
-    #print(len(training_df))
-    #print(training_df.shape[0])
-    #print("abc")
 
     for category in category_list:
         training_df[f"n_{category}"] = -1.0
         training_df[f"shortest_distance_{category}"] = -1.0
-    #print(len(training_df))
-    #print(training_df.shape[0])
 
     for category in category_list:
         for i in range(len(training_df)):
-            #print(type(training_df.at[i, "lattitude"]))
-            #print(training_df.at[i, "lattitude"])
-            #asdasd
-            #features = fetch_geo_features_nearby_from_df(training_df["lattitude"], training_df["longitude"], feature_range_width, feature_range_height, category_pois_dict[category])
-            #feature_df = fetch_geo_features_nearby_from_df(float(training_df.at[i, "lattitude"]), float(training_df.at[i, "longitude"]), feature_range_width, feature_range_height, category_pois_dict[category])
             feature_df = access.fetch_geo_features_nearby_from_df(float(training_df["lattitude"].iloc[i]), float(training_df["longitude"].iloc[i]), feature_range_width, feature_range_height, category_pois_dict[category])
             training_df[f"n_{category}"].iloc[i] = len(feature_df)
             training_df[f"shortest_distance_{category}"].iloc[i] = float(assess.calculate_closest_feature(float(training_df["lattitude"].iloc[i]), float(training_df["longitude"].iloc[i]), feature_df, feature_range_width*(2**(1/2))))
-            #training_df.at[i, f"n_{category}"] = len(feature_df)
-            #training_df.at[i, f"shortest_distance_{category}"] = float(calculate_closest_feature(float(training_df.at[i, "lattitude"]), float(training_df.at[i, "longitude"]), feature_df, feature_range_width*(2**(1/2))))
-            #print(f"added features for category: {category}")
-            #print(len(training_df))
-            #print(training_df.shape[0])
 
     return training_df, category_pois_dict
 
@@ -108,14 +98,6 @@ def fetch_prediction_data(target_lat, target_long, feature_range_width, feature_
     :param days_since: int days since both sides
     :return prediction_df: pandas dataframe prediction set
     """
-    #category_pois_dict = {}
-
-    #for category in category_list:
-    #  category_pois = fetch_pois_from_bounding_box(target_lat, target_long, feature_range_width, feature_range_height, fetch_tags(category))
-    #  pois_coords_df = fetch_pois_coordinates(category_pois)[["lattitude", "longitude"]]
-    #  category_pois_dict[category] = pois_coords_df.dropna()
-    
-
     pred_row = {}
 
     for category in category_pois_dict.keys():
@@ -153,6 +135,11 @@ def prepare_training_data(pred_lattitude, pred_longitude, property_type, date, c
     xs = np.array(training_df.drop("price", axis=1), dtype=float)
     return ys, xs, training_df, category_pois_dict
 
+
+
+# ---------------------------------------------------------------------
+# Model fitting and validation
+# ---------------------------------------------------------------------
 
 def fit_OLS_model(ys, xs, training_df):
     """ Fits an Ordinary Least Squares model to training data and returns
@@ -212,6 +199,10 @@ def validate_OLS_model(validation_df, fit_model):
     plt.show()
     print(fit_model.summary())
 
+
+# ---------------------------------------------------------------------
+# Model predictions
+# ---------------------------------------------------------------------
 
 
 def predict_with_OLS_model(fit_model, prediction_df):
@@ -277,10 +268,4 @@ def prediction_ols_L1_regularised(pred_lattitude, pred_longitude, property_type,
     ys, xs, training_df, category_pois_dict = prepare_training_data(pred_lattitude, pred_longitude, property_type, date, category_list, days_since=days_since, property_box_length=property_box_length, feature_box_length=feature_box_length, training_df=training_df, category_pois_dict=category_pois_dict)
     fit_model = fit_regularised_OLS_model(ys, xs, training_df, alpha=alpha, L1_wt=L1_wt)
     print(f"Parameters for regularised model are: {fit_model.params}")
-    #validation_df = training_df
-    #validate_OLS_model_regularised(validation_df, fit_model)
-    #if perform_prediction:
-    #  prediction_df = fynesse.address.fetch_prediction_data(pred_lattitude, pred_longitude, feature_box_length, feature_box_length, category_pois_dict, date, days_since)
-    #  price_prediction = predict_with_OLS_model(fit_model, prediction_df)
-    #  return price_prediction, fit_model
     return fit_model
