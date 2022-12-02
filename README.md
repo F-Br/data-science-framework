@@ -42,6 +42,13 @@ All functions have docstrings and my code has been commented where appropriate t
 *   Validation dataset fetching
 
 ## Assess
-
+*   OSM data operations
+*   OSM plotting
+*   Misc plotting
 
 ## Address
+*   
+*   
+*   
+*   
+*   

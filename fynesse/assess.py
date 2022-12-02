@@ -24,7 +24,11 @@ import pymysql
 
 
 
-# osm data operations
+
+# ---------------------------------------------------------------------
+# OSM data operations
+# ---------------------------------------------------------------------
+
 
 def remove_price_tails(price_df, tail_amount_cut):
     """ Removes from the price outliers from a dataframe.
@@ -58,7 +62,9 @@ def calculate_closest_feature(lat, long, feature_df, max_distance):
     return distance.cdist(property_location, feature_locations).min(axis=1)[0]
 
 
-# osm plotting
+# ---------------------------------------------------------------------
+# OSM plotting
+# ---------------------------------------------------------------------
 
 def plot_category_maps(category_list, name_location, lattitude, longitude, box_width, box_height):
     """ Plots local street map around location and overlays it
@@ -127,7 +133,7 @@ def plot_local_price_map(name_location, lattitude, longitude, box_width, box_hei
     nodes, edges = ox.graph_to_gdfs(graph)
 
     # Get place boundary related to the place name as a geodataframe
-    area = ox.geocode_to_gdf(name_location)#"Cambridge, UK")
+    area = ox.geocode_to_gdf(name_location)
 
     fig, ax = plt.subplots(figsize=(10, 10), dpi=80)
 
@@ -166,30 +172,12 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
         date = datetime.date(2019, 1, 1)
     if price_df is None:
         price_df = access.fetch_pp_and_pc_joined_area(UK_lattitude_mean, UK_longitude_mean, date, lat_height=UK_lattitude_range, long_width=UK_longitude_range, days_since=days_since)
-    
-    #price_df = price_df[price_df["price"] < 700000] # TODO: THIS IS IMPORTANT BECAUSE IT REMOVES OUTLIERS, MAKE A COMMENT THAT YOU SHOULD DO THIS FOR THE DATAFRAME/TABLE
-    #price_df = price_df.sample(n=250)
 
     north, south, west, east = access.calculate_bounding_box_dimensions(UK_lattitude_mean, UK_longitude_mean, UK_longitude_range, UK_lattitude_range)
-
-    #graph = ox.graph_from_place("UK")
-
-    # Retrieve nodes and edges
-    #nodes, edges = ox.graph_to_gdfs(graph)
-
-    # Get place boundary related to the place name as a geodataframe
-    #area = ox.geocode_to_gdf("UK")#"Cambridge, UK")
-
     
     fig, ax = plt.subplots(figsize=(10, 10), dpi=80)
     world = geopandas.read_file(geopandas.datasets.get_path("naturalearth_lowres"))
     world[(world.name == "United Kingdom")].plot(ax=ax, color='white', edgecolor='black')
-
-    # Plot the footprint
-    #area.plot(ax=ax, facecolor="pink")
-
-    # Plot street edges
-    #edges.plot(ax=ax, linewidth=1, edgecolor="dimgray")
 
     ax.set_xlim([west, east])
     ax.set_ylim([south, north])
@@ -197,19 +185,8 @@ def plot_UK_price_map(price_df=None, date=None, days_since=100):
     ax.set_ylabel("Latitude")
     plt.title("Property Prices Across The UK")
 
-
-    # Plot all POIs 
-    #pois.plot(ax=ax, color="blue", alpha=0.7, markersize=10)
-    #buildings.plot(ax=ax, color="blue", alpha=0.7, markersize=10)
-    #libraries.plot(ax=ax, color="green", alpha=0.7)
-    #disabled_spaces.plot(ax=ax, color="red", alpha=0.7, markersize=10)
-    #dbed.plot(ax=ax, color="pink", alpha=0.7, markersize=10)
     price_df.plot.scatter(ax=ax, x='longitude', y='lattitude', alpha=0.1, c='price', colormap='viridis', zorder=2)
-    #pois_lib.plot(ax=ax, color="green", alpha=0.7)
-    #plt.figure(figsize=(10, 10), dpi=80)
     plt.tight_layout()
-    #mlai.write_figure(directory="./maps", filename="kampala-uganda-pois.svg")
-    #mlai.write_figure
 
 
 def plot_type_distribution(price_df, bins=15):
@@ -236,6 +213,10 @@ def plot_type_distribution(price_df, bins=15):
     plt.legend(loc='upper right')
     plt.show()
 
+
+# ---------------------------------------------------------------------
+# Misc plotting
+# ---------------------------------------------------------------------
 
 
 def plot_rolling_average(df, x_col, y_col, window_size, alpha=0.1, label="", color="b", fig=None, ax=None):
