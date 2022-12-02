@@ -12,6 +12,10 @@ import sqlite"""
 
 """Place commands in this file to access the data electronically. Don't remove any missing values, or deal with outliers. Make sure you have legalities correct, both intellectual property and personal data privacy rights. Beyond the legal side also think about the ethical issues around this data. """
 
+# https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads#using-or-publishing-our-price-paid-data for information on data rights with property price data
+# https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/  http://www.ordnancesurvey.co.uk/docs/licences/os-opendata-licence.pdf   postcode data license
+# 
+
 
 import datetime
 import numpy as np
@@ -348,6 +352,96 @@ def upload_pc_data():
     print("ONS data uploaded")
 
 
+# db data cleaning/sanity checks
+
+def fetch_table_head(table, limit):
+    """ Fetches the head of a table up to a given number of rows.
+    :param table: string table name
+    :param limit: int number of rows
+    :return rows: tuple of tuple of row values
+    """
+    conn = create_connection()
+
+    cur = conn.cursor()
+
+    cur.execute(f"""
+                SELECT * FROM {table} LIMIT {limit};
+                """)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+def table_row_count(table):
+    """ Fetches the row count in a table.
+    :param table: string table name
+    :return rows: tuple of tuple of row values
+    """
+    conn = create_connection()
+
+    cur = conn.cursor()
+
+    cur.execute(f"""
+                SELECT count(*) FROM {table};
+                """)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def check_column_for_null(table, column_name):
+    """ Checks for a column, how many rows contain a null value. 
+    :param table: string table name
+    :param column_name: string column name
+    :return rows: tuple of tuple of row values
+    """
+    conn = create_connection()
+
+    cur = conn.cursor()
+
+    cur.execute(f"""
+                SELECT count(*) FROM {table}
+                WHERE {column_name} IS NULL;
+                """)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def check_column_for_value(table, column_name, check_value):
+    """ Checks for a column, how many rows contain a specific value. 
+    :param table: string table name
+    :param column_name: string column name
+    :param check_value: string or int value
+    :return rows: tuple of tuple of row values
+    """
+    conn = create_connection()
+
+    cur = conn.cursor()
+
+    cur.execute(f"""
+                SELECT count(*) FROM {table}
+                WHERE {column_name} = "{check_value}";
+                """)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+
+def check_for_no_longitude_and_lattitude():
+    """ Gives how many rows don't have a value for both lattitude and longitude.
+    :return rows: tuple of tuple of row values
+    """
+    conn = create_connection()
+
+    cur = conn.cursor()
+
+    cur.execute(f"""
+                SELECT count(*) FROM postcode_data
+                WHERE longitude = "" and lattitude = "";
+                """)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
 
 
 
