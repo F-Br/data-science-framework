@@ -81,15 +81,16 @@ def plot_category_maps(category_list, name_location, lattitude, longitude, box_w
     # Get place boundary related to the place name as a geodataframe
     area = ox.geocode_to_gdf(name_location)#"Cambridge, UK")
 
-    fig, ax = plt.subplots(figsize=(20, 20), dpi=80)
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=80)
 
     # Plot street edges
     edges.plot(ax=ax, linewidth=1, edgecolor="dimgray")
 
     ax.set_xlim([west, east])
     ax.set_ylim([south, north])
-    ax.set_xlabel("longitude")
-    ax.set_ylabel("latitude")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    plt.title("Local Map With Category Features")
 
     # Plot all POIs 
     for category in category_list:
@@ -137,6 +138,7 @@ def plot_local_price_map(name_location, lattitude, longitude, box_width, box_hei
     ax.set_ylim([south, north])
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
+    plt.title("Local Map With Prices")
 
     # Plot all POIs 
     price_df.plot.scatter(ax=ax, x='longitude', y='lattitude', alpha=0.3, zorder=2, c='price', colormap='viridis')
@@ -251,7 +253,7 @@ def plot_rolling_average(df, x_col, y_col, window_size, alpha=0.1, label="", col
     rolling_price_array = df.sort_values(by=[x_col])[y_col].rolling(window=window_size).mean()
     plt.xlabel(x_col)
     plt.ylabel("rolling average price")
-    plt.title(f"Rolling average price along {x_col} over The UK")
+    plt.title(f"Rolling average price along {x_col} over the UK")
     plt.plot(df.sort_values(by=[x_col])[x_col], rolling_price_array, alpha=alpha, label=label, color=color)
 
 
